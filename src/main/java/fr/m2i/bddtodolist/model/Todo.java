@@ -1,6 +1,6 @@
 package fr.m2i.bddtodolist.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Todo {
     private String name, description;

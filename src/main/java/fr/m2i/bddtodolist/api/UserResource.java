@@ -10,11 +10,12 @@ import java.sql.SQLException;
 @Path("/user")
 public class UserResource {
     @GET
-    public Response getUserInfo(@QueryParam("id") int userId) {
+    @Path("/{id}")
+    public Response getUserInfo(@PathParam("id") int userId) {
        try(DataAccess da = DataAccess.getInstance()) {
            return Response
                    .status(Response.Status.OK)
-                   .entity(String.format("%s", da.getUserInfoFromDB(userId)))
+                   .entity(String.format("%s", da.getUserById(userId)))
                    .build();
        } catch (SQLException e) {
            return Response
@@ -22,6 +23,21 @@ public class UserResource {
                    .entity(e.getMessage())
                    .build();
        }
+    }
+
+    @GET
+    public Response getUser() {
+        try(DataAccess da = DataAccess.getInstance()) {
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(String.format("%s", da.getUserFromDB()))
+                    .build();
+        } catch (SQLException e) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @POST

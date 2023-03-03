@@ -26,10 +26,14 @@ public class DataAccess implements AutoCloseable{
     private final String SELECT_URGENCE_QUERY = "SELECT * FROM Urgence";
     private final String SELECT_URGENCE_BY_ID = "SELECT * FROM Urgence WHERE urgenceId = ?";
     private final String INSERT_URGENCE_QUERY = "INSERT INTO Urgence (urgenceLevel) VALUE (?)";
+
+    private final String SELECT_USER_QUERY = "SELECT * FROM User";
     private final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE userId = ?";
+    private final String INSERT_USER_QUERY = "INSERT INTO User (userName, userFirstName) VALUE (?, ?)";
+
     private final String SELECT_TODO_BY_ID = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId WHERE todoId = ?";
     private final String INSERT_TODO_QUERY = "INSERT INTO Todo (todoName, todoDesc, dateTodo, urgenceId, userId) VALUE (?, ?, ?, ?, ?)";
-    private final String INSERT_USER_QUERY = "INSERT INTO User (userName, userFirstName) VALUE (?, ?)";
+
     public Connection getConnection() {
         return connection;
     }
@@ -152,7 +156,7 @@ public class DataAccess implements AutoCloseable{
         }
     }
 
-    public StringBuilder getUserInfoFromDB(int userId) throws SQLException{
+    public StringBuilder getUserById(int userId) throws SQLException{
         StringBuilder sb = new StringBuilder();
         try(PreparedStatement ps = this.connection.prepareStatement(SELECT_USER_BY_ID))
         {
@@ -164,6 +168,25 @@ public class DataAccess implements AutoCloseable{
                 throw new SQLException("USER ID NOT FOUND");
             }
             rs.close();
+        }
+        return sb;
+    }
+
+    public StringBuilder getUserFromDB() {
+        StringBuilder sb = new StringBuilder();
+        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_USER_QUERY);
+            ResultSet rs = ps.executeQuery())
+        {
+            while(rs.next()) {
+                sb.append(String.format(
+                        "User Id : %d, User name : %s, User first name : %s\n",
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3)
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         return sb;
     }

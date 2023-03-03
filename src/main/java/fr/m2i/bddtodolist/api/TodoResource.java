@@ -12,11 +12,12 @@ import java.sql.SQLException;
 @Path("/todo")
 public class TodoResource {
     @GET
-    public Response getTodoById(@QueryParam("id") int id) {
+    @Path("/{id}")
+    public Response getTodoById(@PathParam("id") int id) {
         try(DataAccess da = DataAccess.getInstance()) {
             return Response
                     .status(Response.Status.OK)
-                    .entity(String.format("%s", da.getTodoFromDB(id)))
+                    .entity(String.format("%s", da.getTodoById(id)))
                     .build();
         } catch (SQLException e) {
             return Response
@@ -25,9 +26,25 @@ public class TodoResource {
                     .build();
         }
     }
+
+    @GET
+    public Response getTodoList() {
+        try(DataAccess da = DataAccess.getInstance()) {
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(String.format("%s", da.getTodoFromDB()))
+                    .build();
+        } catch (SQLException e) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
     @POST
     @Path("/create")
-    public Response createTodoByUserId(@QueryParam("userId") int userId,
+    public Response createTodoByUserId(@FormParam("userId") int userId,
                                        @FormParam("todoName") String todoName,
                                        @FormParam("todoDesc") String todoDesc,
                                        @FormParam("dateTodo") Date dateTodo,

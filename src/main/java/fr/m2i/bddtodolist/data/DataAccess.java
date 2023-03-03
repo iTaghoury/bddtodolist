@@ -31,6 +31,7 @@ public class DataAccess implements AutoCloseable{
     private final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE userId = ?";
     private final String INSERT_USER_QUERY = "INSERT INTO User (userName, userFirstName) VALUE (?, ?)";
 
+    private final String SELECT_TODO_QUERY = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId";
     private final String SELECT_TODO_BY_ID = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId WHERE todoId = ?";
     private final String INSERT_TODO_QUERY = "INSERT INTO Todo (todoName, todoDesc, dateTodo, urgenceId, userId) VALUE (?, ?, ?, ?, ?)";
 
@@ -125,7 +126,7 @@ public class DataAccess implements AutoCloseable{
         }
     }
 
-    public StringBuilder getTodoFromDB(int todoId) throws SQLException {
+    public StringBuilder getTodoById(int todoId) throws SQLException {
         StringBuilder sb = new StringBuilder();
         try(PreparedStatement ps = this.connection.prepareStatement(SELECT_TODO_BY_ID))
         {
@@ -144,6 +145,28 @@ public class DataAccess implements AutoCloseable{
                 throw new SQLException("TODO ID NOT FOUND");
             }
             rs.close();
+        }
+        return sb;
+    }
+
+    public StringBuilder getTodoFromDB() {
+        StringBuilder sb = new StringBuilder();
+        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_TODO_QUERY);
+            ResultSet rs = ps.executeQuery())
+        {
+            while(rs.next()) {
+                sb.append(String.format("Todo %d\nTodo Name : %s\nTodo Description : %s\nTodo date : %s\nUrgence : %d\nUser Name : %s\nUser first name : %s",
+                        rs.getInt("todoId"),
+                        rs.getString("todoName"),
+                        rs.getString("todoDesc"),
+                        rs.getDate("dateTodo").toString(),
+                        rs.getInt("urgenceId"),
+                        rs.getString("userName"),
+                        rs.getString("userFirstName")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         return sb;
     }

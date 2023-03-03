@@ -1,4 +1,4 @@
-package fr.m2i.bddtodolist;
+package fr.m2i.bddtodolist.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

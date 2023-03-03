@@ -12,4 +12,5 @@ public class Todolist {
     public LinkedList<Todo> getTodo() {
         return this.todolist;
     }
+
 }

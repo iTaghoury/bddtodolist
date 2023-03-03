@@ -5,16 +5,16 @@ import java.sql.Date;
 public class Todo {
     private String name, description;
     private Date date;
-    private Urgence urgence;
+    private int urgenceId;
     private int userId;
 
     public Todo() {}
 
-    public Todo(String name, String description, Date date, Urgence urgence, int userId) {
+    public Todo(String name, String description, Date date, int urgenceId, int userId) {
         this.name = name;
         this.description = description;
         this.date = date;
-        this.urgence = urgence;
+        this.urgenceId = urgenceId;
         this.userId = userId;
     }
 
@@ -42,12 +42,12 @@ public class Todo {
         this.date = date;
     }
 
-    public Urgence getUrgence() {
-        return urgence;
+    public int getUrgenceId() {
+        return urgenceId;
     }
 
-    public void setUrgence(Urgence urgence) {
-        this.urgence = urgence;
+    public void setUrgenceId(int urgenceId) {
+        this.urgenceId = urgenceId;
     }
 
     public int getUserId() {

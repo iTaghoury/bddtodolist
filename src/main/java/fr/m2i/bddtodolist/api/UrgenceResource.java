@@ -1,22 +1,22 @@
 package fr.m2i.bddtodolist.api;
 
 import fr.m2i.bddtodolist.data.DataAccess;
-import fr.m2i.bddtodolist.model.Todo;
 import fr.m2i.bddtodolist.model.Urgence;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
-import java.sql.Date;
 import java.sql.SQLException;
 
-@Path("/todo")
-public class TodoResource {
+@Path("/urgence")
+public class UrgenceResource {
+
     @GET
-    public Response getTodoById(@QueryParam("id") int id) {
+    @Path("/{id}")
+    public Response getUrgenceById(@PathParam("id") int id) {
         try(DataAccess da = DataAccess.getInstance()) {
             return Response
                     .status(Response.Status.OK)
-                    .entity(String.format("%s", da.getTodoFromDB(id)))
+                    .entity(String.format("%s", da.getUrgenceById(id)))
                     .build();
         } catch (SQLException e) {
             return Response
@@ -25,17 +25,28 @@ public class TodoResource {
                     .build();
         }
     }
+
+    @GET
+    public Response getUrgence() {
+        try(DataAccess da = DataAccess.getInstance()) {
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(String.format("%s", da.getUrgenceFromDB()))
+                    .build();
+        } catch (SQLException e) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
     @POST
     @Path("/create")
-    public Response createTodoByUserId(@QueryParam("userId") int userId,
-                                       @FormParam("todoName") String todoName,
-                                       @FormParam("todoDesc") String todoDesc,
-                                       @FormParam("dateTodo") Date dateTodo,
-                                       @FormParam("urgenceId") int urgenceId)
-    {
-        Todo todo = new Todo(todoName, todoDesc, dateTodo, urgenceId, userId);
+    public Response createUrgence(@FormParam("urgenceLevel") String urgenceLevel) {
+        Urgence urgence = new Urgence(urgenceLevel);
         try(DataAccess da = DataAccess.getInstance()) {
-            da.addTodoToDB(todo);
+            da.addUrgenceToDB(urgence);
         } catch (SQLException e) {
             return Response
                     .status(Response.Status.BAD_REQUEST)
@@ -44,8 +55,8 @@ public class TodoResource {
         }
         return Response
                 .status(Response.Status.CREATED)
-                .entity(todo)
+                .entity(urgence)
                 .build();
     }
-
 }
+

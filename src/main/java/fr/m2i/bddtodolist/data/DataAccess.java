@@ -1,7 +1,6 @@
 package fr.m2i.bddtodolist.data;
 
-import fr.m2i.bddtodolist.model.Todo;
-import fr.m2i.bddtodolist.model.User;
+import fr.m2i.bddtodolist.model.*;
 
 import java.sql.*;
 
@@ -20,11 +19,13 @@ public class DataAccess implements AutoCloseable{
 
     //region USER PASSWORD AND URL
     private final String USER = "root";
-    private final String PASSWORD = "0628Cara*";
+    private final String PASSWORD = "Tassemanouche1";
     private static final String URL = "jdbc:mysql://localhost:3306/todoList?connectTimeout=3000&useSSL=false&allowPublicKeyRetrieval=true";
     //endregion
 
-    private final String SELECT_QUERY = "SELECT * FROM Urgence";
+    private final String SELECT_URGENCE_QUERY = "SELECT * FROM Urgence";
+    private final String SELECT_URGENCE_BY_ID = "SELECT * FROM Urgence WHERE urgenceId = ?";
+    private final String INSERT_URGENCE_QUERY = "INSERT INTO Urgence (urgenceLevel) VALUE (?)";
     private final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE userId = ?";
     private final String SELECT_TODO_BY_ID = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId WHERE todoId = ?";
     private final String INSERT_TODO_QUERY = "INSERT INTO Todo (todoName, todoDesc, dateTodo, urgenceId, userId) VALUE (?, ?, ?, ?, ?)";
@@ -64,9 +65,9 @@ public class DataAccess implements AutoCloseable{
         instance = null;
     }
 
-    public StringBuilder getUrgence() {
+    public StringBuilder getUrgenceFromDB() {
         StringBuilder sb = new StringBuilder();
-        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_QUERY);
+        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_URGENCE_QUERY);
             ResultSet rs = ps.executeQuery())
         {
             while(rs.next()) {
@@ -82,12 +83,39 @@ public class DataAccess implements AutoCloseable{
         return sb;
     }
 
+    public String getUrgenceById(int id) throws SQLException {
+        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_URGENCE_BY_ID))
+        {
+            ps.setInt(1, id);
+            try(ResultSet rs = ps.executeQuery()) {
+                if(rs.next()) {
+                    return (String.format(
+                            "Urgence Id : %d, Urgence Level : %s\n",
+                            rs.getInt(1),
+                            rs.getString(2)
+                    ));
+                } else {
+                    throw new SQLException("URGENCE ID NOT FOUND");
+                }
+            }
+        } catch (SQLException e) {
+            return e.getMessage();
+        }
+    }
+
+    public void addUrgenceToDB(Urgence urgence) throws SQLException {
+        try(PreparedStatement ps = this.connection.prepareStatement(INSERT_URGENCE_QUERY)) {
+            ps.setString(1, urgence.getUrgenceLevel());
+            ps.execute();
+        }
+    }
+
     public void addTodoToDB(Todo todo) throws SQLException {
         try(PreparedStatement ps = this.connection.prepareStatement(INSERT_TODO_QUERY)) {
             ps.setString(1, todo.getName());
             ps.setString(2, todo.getDescription());
             ps.setDate(3, todo.getDate());
-            ps.setInt(4, todo.getUrgence().ordinal()+1);
+            ps.setInt(4, todo.getUrgenceId());
             ps.setInt(5, todo.getUserId());
             ps.execute();
         }
@@ -131,7 +159,7 @@ public class DataAccess implements AutoCloseable{
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             if(rs.next()) {
-                sb.append(String.format("User name : %s\n User first name : %s", rs.getString("userName"), rs.getString("userFirstName")));
+                sb.append(String.format("User name : %s\nUser first name : %s", rs.getString("userName"), rs.getString("userFirstName")));
             } else {
                 throw new SQLException("USER ID NOT FOUND");
             }

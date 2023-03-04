@@ -31,6 +31,7 @@ public class TodoDataAccess implements AutoCloseable{
     private final String SELECT_TODO_BY_URGENCE_ID = "SELECT todoId, todoName, todoDesc, dateTodo, Urgence.urgenceId,  Urgence.urgenceLevel, User.userName, User.userFirstName, User.userId FROM Todo INNER JOIN User ON Todo.userId = User.userId INNER JOIN Urgence ON Todo.urgenceId = Urgence.urgenceId WHERE Urgence.urgenceId = ?";
     private final String SELECT_TODO_ORDER_BY = "SELECT todoId, todoName, todoDesc, dateTodo, Urgence.urgenceId,  Urgence.urgenceLevel, User.userName, User.userFirstName, User.userId FROM Todo INNER JOIN User ON Todo.userId = User.userId INNER JOIN Urgence ON Todo.urgenceId = Urgence.urgenceId ORDER BY User.userId, Urgence.urgenceId";
     private final String UPDATE_TODO = "UPDATE todo SET todoName = ?, todoDesc = ?, dateTodo = ?, urgenceId = ?, userId = ? WHERE todoId = ?";
+    private final String DELETE_TODO = "DELETE FROM Todo WHERE todoId = ?";
     //endregion
 
     //region COMMON METHODS
@@ -196,6 +197,21 @@ public class TodoDataAccess implements AutoCloseable{
             throw new IdNotFoundException("Todo ID NOT FOUND");
         }
     }
+    //endregion
+
+    //region DELETE QUERY
+
+    public void deleteTodoFromDB(int todoId) throws IdNotFoundException, SQLException {
+        if(isIdInDB(todoId)) {
+            try (PreparedStatement ps = this.connection.prepareStatement(DELETE_TODO)) {
+                ps.setInt(1, todoId);
+                ps.execute();
+            }
+        } else {
+            throw new IdNotFoundException("Todo ID NOT FOUND");
+        }
+    }
+
     //endregion
 
     //region OTHER METHODS

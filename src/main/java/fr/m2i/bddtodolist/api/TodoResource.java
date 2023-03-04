@@ -167,5 +167,26 @@ public class TodoResource {
         }
     }
 
+    @DELETE
+    @Path("/delete")
+    public Response deleteTodo(@QueryParam("id") int todoId) {
+        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+            da.deleteTodoFromDB(todoId);
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(String.format("Deleted Todo with id %d", todoId))
+                    .build();
+        } catch (IdNotFoundException e1) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e1.getMessage())
+                    .build();
+        } catch (SQLException e2) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(e2.getMessage())
+                    .build();
+        }
+    }
 
 }

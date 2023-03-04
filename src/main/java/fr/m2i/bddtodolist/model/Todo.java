@@ -5,27 +5,42 @@ import java.sql.Date;
 public class Todo {
     private String name, description;
     private Date date;
-    private int id, urgenceId, userId;
+    private int id;
+    private Urgence urgence;
+    private User user;
 
     //region CONSTRUCTORS
     public Todo() {}
 
-    public Todo(String name, String description, Date date, int urgenceId, int userId) {
+    public Todo(String name, String description, Date date) {
         this.name = name;
         this.description = description;
         this.date = date;
-        this.urgenceId = urgenceId;
-        this.userId = userId;
     }
 
-    public Todo(int id, String name, String description, Date date, int urgenceId, int userId) {
+    public Todo(int id, String name, String description, Date date) {
         this.name = name;
         this.description = description;
         this.date = date;
         this.id = id;
-        this.urgenceId = urgenceId;
-        this.userId = userId;
     }
+    public Todo(String name, String description, Date date, Urgence urgence, User user) {
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.urgence = urgence;
+        this.user = user;
+    }
+
+    public Todo(int id, String name, String description, Date date, Urgence urgence, User user) {
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.urgence = urgence;
+        this.user = user;
+        this.id = id;
+    }
+
     //endregion
 
     //region GETTERS AND SETTERS
@@ -62,20 +77,21 @@ public class Todo {
         this.date = date;
     }
 
-    public int getUrgenceId() {
-        return urgenceId;
+    public Urgence getUrgence() {
+        return urgence;
     }
 
-    public void setUrgenceId(int urgenceId) {
-        this.urgenceId = urgenceId;
+    public void setUrgence(Urgence urgence) {
+        this.urgence = urgence;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
+
     //endregion
 }

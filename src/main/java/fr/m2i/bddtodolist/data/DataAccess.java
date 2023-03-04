@@ -21,9 +21,6 @@ public class DataAccess implements AutoCloseable{
 
     //region QUERIES
 
-    private final String SELECT_TODO_QUERY = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId";
-    private final String SELECT_TODO_BY_ID = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId WHERE todoId = ?";
-    private final String INSERT_TODO_QUERY = "INSERT INTO Todo (todoName, todoDesc, dateTodo, urgenceId, userId) VALUE (?, ?, ?, ?, ?)";
     //endregion
     public Connection getConnection() {
         return connection;
@@ -64,60 +61,4 @@ public class DataAccess implements AutoCloseable{
         }
     }
 
-
-    public void addTodoToDB(Todo todo) throws SQLException {
-        try(PreparedStatement ps = this.connection.prepareStatement(INSERT_TODO_QUERY)) {
-            ps.setString(1, todo.getName());
-            ps.setString(2, todo.getDescription());
-            ps.setDate(3, todo.getDate());
-            ps.setInt(4, todo.getUrgenceId());
-            ps.setInt(5, todo.getUserId());
-            ps.execute();
-        }
-    }
-
-    public StringBuilder getTodoById(int todoId) throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_TODO_BY_ID))
-        {
-            ps.setInt(1, todoId);
-            ResultSet rs = ps.executeQuery();
-            if(rs.next()) {
-                sb.append(String.format("Todo %d\nTodo Name : %s\nTodo Description : %s\nTodo date : %s\nUrgence : %d\nUser Name : %s\nUser first name : %s",
-                                        rs.getInt("todoId"),
-                                        rs.getString("todoName"),
-                                        rs.getString("todoDesc"),
-                                        rs.getDate("dateTodo").toString(),
-                                        rs.getInt("urgenceId"),
-                                        rs.getString("userName"),
-                                        rs.getString("userFirstName")));
-            } else {
-                throw new SQLException("TODO ID NOT FOUND");
-            }
-            rs.close();
-        }
-        return sb;
-    }
-
-    public StringBuilder getTodoFromDB() {
-        StringBuilder sb = new StringBuilder();
-        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_TODO_QUERY);
-            ResultSet rs = ps.executeQuery())
-        {
-            while(rs.next()) {
-                sb.append(String.format("Todo %d\nTodo Name : %s\nTodo Description : %s\nTodo date : %s\nUrgence : %d\nUser Name : %s\nUser first name : %s",
-                        rs.getInt("todoId"),
-                        rs.getString("todoName"),
-                        rs.getString("todoDesc"),
-                        rs.getDate("dateTodo").toString(),
-                        rs.getInt("urgenceId"),
-                        rs.getString("userName"),
-                        rs.getString("userFirstName")
-                ));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return sb;
-    }
 }

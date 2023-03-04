@@ -3,6 +3,7 @@ package fr.m2i.bddtodolist.api;
 import fr.m2i.bddtodolist.data.TodoDataAccess;
 import fr.m2i.bddtodolist.model.Todo;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.Date;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 public class TodoResource {
     @GET
     @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getTodoById(@PathParam("id") int id) {
         try(TodoDataAccess da = TodoDataAccess.getInstance()) {
             return Response
@@ -27,6 +29,8 @@ public class TodoResource {
     }
 
     @GET
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getTodoList() {
         try(TodoDataAccess da = TodoDataAccess.getInstance()) {
             return Response
@@ -41,8 +45,60 @@ public class TodoResource {
         }
     }
 
+    @GET
+    @Path("/user")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTodoListByUser(@QueryParam("id") int userId) {
+        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(da.getTodoByUserId(userId))
+                    .build();
+        } catch (SQLException e) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/urgence")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTodoListByUrgence(@QueryParam("id") int urgenceId) {
+        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(da.getTodoByUrgenceId(urgenceId))
+                    .build();
+        } catch (SQLException e) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/order")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOrderTodoList() {
+        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(da.getTodoOrderBy())
+                    .build();
+        } catch (SQLException e) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
     @POST
     @Path("/create")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response createTodo(@FormParam("userId") int userId,
                                @FormParam("todoName") String todoName,
                                @FormParam("todoDesc") String todoDesc,

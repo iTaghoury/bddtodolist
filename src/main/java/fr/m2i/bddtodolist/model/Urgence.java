@@ -5,6 +5,11 @@ public class  Urgence {
     private int urgenceId;
 
     //region CONSTRUCTORS
+
+    public Urgence(int id) {
+        this.urgenceId = id;
+    }
+
     public Urgence(String urgenceLevel) {
         this.urgenceLevel = urgenceLevel;
     }

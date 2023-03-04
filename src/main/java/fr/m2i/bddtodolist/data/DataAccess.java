@@ -20,10 +20,6 @@ public class DataAccess implements AutoCloseable{
     //endregion
 
     //region QUERIES
-    private final String SELECT_URGENCE_QUERY = "SELECT * FROM Urgence";
-    private final String SELECT_URGENCE_BY_ID = "SELECT * FROM Urgence WHERE urgenceId = ?";
-    private final String INSERT_URGENCE_QUERY = "INSERT INTO Urgence (urgenceLevel) VALUE (?)";
-
     private final String SELECT_USER_QUERY = "SELECT * FROM User";
     private final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE userId = ?";
     private final String INSERT_USER_QUERY = "INSERT INTO User (userName, userFirstName) VALUE (?, ?)";

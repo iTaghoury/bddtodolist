@@ -5,9 +5,9 @@ import java.sql.Date;
 public class Todo {
     private String name, description;
     private Date date;
-    private int urgenceId;
-    private int userId;
+    private int id, urgenceId, userId;
 
+    //region CONSTRUCTORS
     public Todo() {}
 
     public Todo(String name, String description, Date date, int urgenceId, int userId) {
@@ -16,6 +16,26 @@ public class Todo {
         this.date = date;
         this.urgenceId = urgenceId;
         this.userId = userId;
+    }
+
+    public Todo(int id, String name, String description, Date date, int urgenceId, int userId) {
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.id = id;
+        this.urgenceId = urgenceId;
+        this.userId = userId;
+    }
+    //endregion
+
+    //region GETTERS AND SETTERS
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -57,4 +77,5 @@ public class Todo {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+    //endregion
 }

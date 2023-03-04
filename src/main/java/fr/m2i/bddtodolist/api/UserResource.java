@@ -1,8 +1,9 @@
 package fr.m2i.bddtodolist.api;
 
-import fr.m2i.bddtodolist.data.DataAccess;
+import fr.m2i.bddtodolist.data.UserDataAccess;
 import fr.m2i.bddtodolist.model.User;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
@@ -11,11 +12,12 @@ import java.sql.SQLException;
 public class UserResource {
     @GET
     @Path("/{id}")
-    public Response getUserInfo(@PathParam("id") int userId) {
-       try(DataAccess da = DataAccess.getInstance()) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUserById(@PathParam("id") int userId) {
+       try(UserDataAccess da = UserDataAccess.getInstance()) {
            return Response
                    .status(Response.Status.OK)
-                   .entity(String.format("%s", da.getUserById(userId)))
+                   .entity(da.getUserById(userId))
                    .build();
        } catch (SQLException e) {
            return Response
@@ -26,11 +28,12 @@ public class UserResource {
     }
 
     @GET
-    public Response getUser() {
-        try(DataAccess da = DataAccess.getInstance()) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUsersList() {
+        try(UserDataAccess da = UserDataAccess.getInstance()) {
             return Response
                     .status(Response.Status.OK)
-                    .entity(String.format("%s", da.getUserFromDB()))
+                    .entity(da.getUserFromDB())
                     .build();
         } catch (SQLException e) {
             return Response
@@ -43,7 +46,7 @@ public class UserResource {
     @POST
     @Path("/create")
     public Response createUser(@FormParam("userName") String userName, @FormParam("userFirstName") String userFirstName) {
-        try(DataAccess da = DataAccess.getInstance()){
+        try(UserDataAccess da = UserDataAccess.getInstance()){
             User user = new User(userName, userFirstName);
             da.addUserToDB(user);
             return Response

@@ -1,6 +1,5 @@
 package fr.m2i.bddtodolist.api;
 
-import fr.m2i.bddtodolist.data.DataAccess;
 import fr.m2i.bddtodolist.data.UrgenceDataAccess;
 import fr.m2i.bddtodolist.model.Urgence;
 import jakarta.ws.rs.*;

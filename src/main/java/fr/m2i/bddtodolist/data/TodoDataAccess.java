@@ -30,8 +30,12 @@ public class TodoDataAccess implements AutoCloseable{
         if(instance == null) {
             return new TodoDataAccess();
         } else {
-            if(instance.connection == null) {
-                instance.createConnection();
+            try {
+                if(instance.connection.isClosed()) {
+                    instance.createConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
         return instance;

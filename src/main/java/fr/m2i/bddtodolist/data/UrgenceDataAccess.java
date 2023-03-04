@@ -31,7 +31,6 @@ public class UrgenceDataAccess implements AutoCloseable  {
     }
 
     private UrgenceDataAccess() {
-        super();
         this.createConnection();
         instance = this;
     }

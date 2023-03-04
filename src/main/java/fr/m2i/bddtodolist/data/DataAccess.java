@@ -20,9 +20,6 @@ public class DataAccess implements AutoCloseable{
     //endregion
 
     //region QUERIES
-    private final String SELECT_USER_QUERY = "SELECT * FROM User";
-    private final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE userId = ?";
-    private final String INSERT_USER_QUERY = "INSERT INTO User (userName, userFirstName) VALUE (?, ?)";
 
     private final String SELECT_TODO_QUERY = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId";
     private final String SELECT_TODO_BY_ID = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId WHERE todoId = ?";
@@ -123,48 +120,4 @@ public class DataAccess implements AutoCloseable{
         }
         return sb;
     }
-
-    public void addUserToDB(User user) throws SQLException {
-        try(PreparedStatement ps = this.connection.prepareStatement(INSERT_USER_QUERY)) {
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getFirstName());
-            ps.execute();
-        }
-    }
-
-    public StringBuilder getUserById(int userId) throws SQLException{
-        StringBuilder sb = new StringBuilder();
-        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_USER_BY_ID))
-        {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            if(rs.next()) {
-                sb.append(String.format("User name : %s\nUser first name : %s", rs.getString("userName"), rs.getString("userFirstName")));
-            } else {
-                throw new SQLException("USER ID NOT FOUND");
-            }
-            rs.close();
-        }
-        return sb;
-    }
-
-    public StringBuilder getUserFromDB() {
-        StringBuilder sb = new StringBuilder();
-        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_USER_QUERY);
-            ResultSet rs = ps.executeQuery())
-        {
-            while(rs.next()) {
-                sb.append(String.format(
-                        "User Id : %d, User name : %s, User first name : %s\n",
-                        rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3)
-                ));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return sb;
-    }
-
 }

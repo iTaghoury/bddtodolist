@@ -17,6 +17,13 @@ public class TodoDataAccess implements AutoCloseable{
     private static final String URL = "jdbc:mysql://localhost:3306/todoList?connectTimeout=3000&useSSL=false&allowPublicKeyRetrieval=true";
     //endregion
 
+    //region QUERY STRINGS
+    private final String SELECT_TODO_QUERY = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId";
+    private final String SELECT_TODO_BY_ID = "SELECT todoId, todoName, todoDesc, dateTodo, urgenceId, User.userName, User.userFirstName FROM Todo INNER JOIN User ON Todo.userId = User.userId WHERE todoId = ?";
+    private final String INSERT_TODO_QUERY = "INSERT INTO Todo (todoName, todoDesc, dateTodo, urgenceId, userId) VALUE (?, ?, ?, ?, ?)";
+    //endregion
+
+    //region COMMON METHODS
     public Connection getConnection() {
         return connection;
     }
@@ -59,4 +66,5 @@ public class TodoDataAccess implements AutoCloseable{
             this.connection.close();
         }
     }
+    //endregion
 }

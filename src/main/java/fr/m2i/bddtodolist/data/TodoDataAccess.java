@@ -19,7 +19,7 @@ public class TodoDataAccess implements AutoCloseable{
 
     //region USER PASSWORD AND URL
     private final String USER = "root";
-    private final String PASSWORD = "Tassemanouche1";
+    private final String PASSWORD = "0628Cara*";
     private static final String URL = "jdbc:mysql://localhost:3306/todoList?connectTimeout=3000&useSSL=false&allowPublicKeyRetrieval=true";
     //endregion
 
@@ -196,6 +196,7 @@ public class TodoDataAccess implements AutoCloseable{
             throw new IdNotFoundException("Todo ID NOT FOUND");
         }
     }
+    //endregion
 
     //region OTHER METHODS
     private ArrayList<Todo> pushTodos(ResultSet rs) {

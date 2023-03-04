@@ -1,5 +1,6 @@
 package fr.m2i.bddtodolist.data;
 
+import fr.m2i.bddtodolist.exception.IdNotFoundException;
 import fr.m2i.bddtodolist.model.Urgence;
 
 import java.sql.*;
@@ -15,7 +16,7 @@ public class UrgenceDataAccess implements AutoCloseable  {
 
     //region USER PASSWORD AND URL
     private final String USER = "root";
-    private final String PASSWORD = "Tassemanouche1";
+    private final String PASSWORD = "0628Cara*";
     private static final String URL = "jdbc:mysql://localhost:3306/todoList?connectTimeout=3000&useSSL=false&allowPublicKeyRetrieval=true";
     //endregion
 
@@ -23,6 +24,7 @@ public class UrgenceDataAccess implements AutoCloseable  {
     private final String SELECT_URGENCE_QUERY = "SELECT * FROM Urgence";
     private final String SELECT_URGENCE_BY_ID = "SELECT * FROM Urgence WHERE urgenceId = ?";
     private final String INSERT_URGENCE_QUERY = "INSERT INTO Urgence (urgenceLevel) VALUE (?)";
+    private final String UPDATE_URGENCE_QUERY = "UPDATE urgence SET urgenceLevel = ? WHERE urgenceId = ?";
     //endregion
 
     //region COMMON METHODS
@@ -116,6 +118,37 @@ public class UrgenceDataAccess implements AutoCloseable  {
     //endregion
 
 
+    //region UPDATE QUERY
+
+    public void updateUrgence(Urgence urgence) throws IdNotFoundException, SQLException {
+        if(isIdInDB(urgence.getUrgenceId())) {
+            try(PreparedStatement ps = this.connection.prepareStatement(UPDATE_URGENCE_QUERY)) {
+                ps.setString(1, urgence.getUrgenceLevel());
+                ps.setInt(2, urgence.getUrgenceId());
+                ps.execute();
+            }
+        } else {
+            throw new IdNotFoundException("Urgence ID NOT FOUND");
+        }
+    }
+
+    //endregion
+
+    //endregion
+
+    //region OTHER METHODS
+
+    private boolean isIdInDB(int id) {
+        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_URGENCE_BY_ID)) {
+            ps.setInt(1, id);
+            try(ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
 
     //endregion
 

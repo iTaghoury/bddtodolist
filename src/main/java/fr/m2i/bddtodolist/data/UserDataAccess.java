@@ -1,5 +1,6 @@
 package fr.m2i.bddtodolist.data;
 
+import fr.m2i.bddtodolist.exception.IdNotFoundException;
 import fr.m2i.bddtodolist.model.User;
 
 import java.sql.*;
@@ -15,7 +16,7 @@ public class UserDataAccess implements AutoCloseable{
     }
     //region USER PASSWORD AND URL
     private final String USER = "root";
-    private final String PASSWORD = "Tassemanouche1";
+    private final String PASSWORD = "0628Cara*";
     private static final String URL = "jdbc:mysql://localhost:3306/todoList?connectTimeout=3000&useSSL=false&allowPublicKeyRetrieval=true";
     //endregion
 
@@ -23,6 +24,7 @@ public class UserDataAccess implements AutoCloseable{
     private final String SELECT_USER_QUERY = "SELECT * FROM User";
     private final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE userId = ?";
     private final String INSERT_USER_QUERY = "INSERT INTO User (userName, userFirstName) VALUE (?, ?)";
+    private final String UPDATE_USER_QUERY = "UPDATE user SET userName = ?, userFirstName = ? WHERE userId = ?";
 
     //endregion
 
@@ -115,4 +117,31 @@ public class UserDataAccess implements AutoCloseable{
 
     //endregion
 
+    //region UPDATE QUERY
+    public void updateUser(User user) throws IdNotFoundException, SQLException {
+        if(isIdInDB(user.getId())) {
+            try(PreparedStatement ps = this.connection.prepareStatement(UPDATE_USER_QUERY)) {
+                ps.setString(1, user.getName());
+                ps.setString(2, user.getFirstName());
+                ps.setInt(3, user.getId());
+                ps.execute();
+            }
+        } else {
+            throw new IdNotFoundException("User ID NOT FOUND");
+        }
+    }
+
+    //endregion
+
+    private boolean isIdInDB(int id) {
+        try(PreparedStatement ps = this.connection.prepareStatement(SELECT_USER_BY_ID)) {
+            ps.setInt(1, id);
+            try(ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
 }

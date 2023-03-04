@@ -93,8 +93,8 @@ public class TodoDataAccess implements AutoCloseable{
             ps.setInt(1, id);
             try(ResultSet rs = ps.executeQuery()) {
                 if(rs.next()) {
-                    User todoUser = new User(rs.getString("userName"), rs.getString("userFirstName"));
-                    Urgence todoUrgence = new Urgence(rs.getString("urgenceLevel"));
+                    User todoUser = new User(rs.getInt("userId"), rs.getString("userName"), rs.getString("userFirstName"));
+                    Urgence todoUrgence = new Urgence(rs.getInt("urgenceId"), rs.getString("urgenceLevel"));
                     return new Todo(rs.getInt("todoId"),
                                     rs.getString("todoName"),
                                     rs.getString("todoDesc"),

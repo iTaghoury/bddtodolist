@@ -25,6 +25,7 @@ public class UserDataAccess implements AutoCloseable{
     private final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE userId = ?";
     private final String INSERT_USER_QUERY = "INSERT INTO User (userName, userFirstName) VALUE (?, ?)";
     private final String UPDATE_USER_QUERY = "UPDATE user SET userName = ?, userFirstName = ? WHERE userId = ?";
+    private final String DELETE_USER_QUERY = "DELETE Todo.*, User.* FROM Todo LEFT JOIN User ON User.userId = Todo.userId WHERE Todo.userId = ?";
 
     //endregion
 
@@ -133,6 +134,22 @@ public class UserDataAccess implements AutoCloseable{
 
     //endregion
 
+    //region DELETE QUERY
+
+    public void deleteUser(int userId) throws IdNotFoundException, SQLException {
+        if(isIdInDB(userId)) {
+            try(PreparedStatement ps = this.connection.prepareStatement(DELETE_USER_QUERY)) {
+                ps.setInt(1, userId);
+                ps.execute();
+            }
+        } else {
+            throw new IdNotFoundException("User ID NOT FOUND");
+        }
+    }
+
+    //endregion
+
+    //region OTHER METHODS
     private boolean isIdInDB(int id) {
         try(PreparedStatement ps = this.connection.prepareStatement(SELECT_USER_BY_ID)) {
             ps.setInt(1, id);
@@ -144,4 +161,5 @@ public class UserDataAccess implements AutoCloseable{
             return false;
         }
     }
+    //endregion
 }

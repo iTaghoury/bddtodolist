@@ -82,4 +82,26 @@ public class UserResource {
         }
     }
 
+    @DELETE
+    @Path("/delete")
+    public Response deleteUser(@QueryParam("id") int id) {
+        try(UserDataAccess da = UserDataAccess.getInstance()) {
+            da.deleteUser(id);
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(String.format("Deleted user with id %d", id))
+                    .build();
+        } catch (IdNotFoundException e1) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e1.getMessage())
+                    .build();
+        } catch (SQLException e2) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(e2.getMessage())
+                    .build();
+        }
+    }
+
 }

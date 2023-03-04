@@ -1,6 +1,7 @@
 package fr.m2i.bddtodolist.data;
 
 import fr.m2i.bddtodolist.exception.IdNotFoundException;
+import fr.m2i.bddtodolist.exception.TodosRemainingException;
 import fr.m2i.bddtodolist.model.Urgence;
 
 import java.sql.*;
@@ -21,10 +22,12 @@ public class UrgenceDataAccess implements AutoCloseable  {
     //endregion
 
     //region QUERY STRINGS
+    private final String INSERT_URGENCE_QUERY = "INSERT INTO Urgence (urgenceLevel) VALUE (?)";
     private final String SELECT_URGENCE_QUERY = "SELECT * FROM Urgence";
     private final String SELECT_URGENCE_BY_ID = "SELECT * FROM Urgence WHERE urgenceId = ?";
-    private final String INSERT_URGENCE_QUERY = "INSERT INTO Urgence (urgenceLevel) VALUE (?)";
-    private final String UPDATE_URGENCE_QUERY = "UPDATE urgence SET urgenceLevel = ? WHERE urgenceId = ?";
+    private final String UPDATE_URGENCE_QUERY = "UPDATE urgence SET urgenceLevel = ? ";
+    private final String DELETE_URGENCE_QUERY = "DELETE FROM Urgence WHERE urgenceId NOT IN (SELECT urgenceId FROM Todo) AND urgenceId = ?";
+    private final String CHECK_FOR_TODOS_QUERY = "SELECT * FROM Urgence WHERE urgenceId NOT IN (SELECT urgenceId FROM Todo) AND urgenceId = ?";
     //endregion
 
     //region COMMON METHODS
@@ -134,6 +137,25 @@ public class UrgenceDataAccess implements AutoCloseable  {
 
     //endregion
 
+    //region DELETE QUERY
+
+    public void deleteUrgence(int urgenceId) throws TodosRemainingException, IdNotFoundException, SQLException {
+        if(isIdInDB(urgenceId)) {
+            if(areThereTodosRemaining(urgenceId)) {
+                throw new TodosRemainingException("Cannot delete Urgence level, todos still remaining");
+            } else {
+                try(PreparedStatement ps = this.connection.prepareStatement(DELETE_URGENCE_QUERY)) {
+                    ps.setInt(1, urgenceId);
+                    ps.execute();
+                }
+            }
+        } else {
+            throw new IdNotFoundException("Urgence ID NOT FOUND");
+        }
+    }
+
+    //endregion
+
     //endregion
 
     //region OTHER METHODS
@@ -147,6 +169,18 @@ public class UrgenceDataAccess implements AutoCloseable  {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
+        }
+    }
+
+    private boolean areThereTodosRemaining(int urgenceId) {
+        try(PreparedStatement ps = this.connection.prepareStatement(CHECK_FOR_TODOS_QUERY)) {
+            ps.setInt(1, urgenceId);
+            try(ResultSet rs = ps.executeQuery()) {
+                return !rs.next();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return true;
         }
     }
 

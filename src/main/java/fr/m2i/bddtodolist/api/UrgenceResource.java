@@ -3,6 +3,7 @@ package fr.m2i.bddtodolist.api;
 import fr.m2i.bddtodolist.data.UrgenceDataAccess;
 import fr.m2i.bddtodolist.data.UserDataAccess;
 import fr.m2i.bddtodolist.exception.IdNotFoundException;
+import fr.m2i.bddtodolist.exception.TodosRemainingException;
 import fr.m2i.bddtodolist.model.Urgence;
 import fr.m2i.bddtodolist.model.User;
 import jakarta.ws.rs.*;
@@ -74,6 +75,33 @@ public class UrgenceResource {
                     .status(Response.Status.OK)
                     .entity(urgence)
                     .build();
+        } catch (IdNotFoundException e1) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(e1.getMessage())
+                    .build();
+        } catch (SQLException e2) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(e2.getMessage())
+                    .build();
+        }
+    }
+
+    @DELETE
+    @Path("/delete")
+    public Response deleteUrgence(@QueryParam("id") int id) {
+        try(UrgenceDataAccess da = UrgenceDataAccess.getInstance()) {
+            da.deleteUrgence(id);
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(String.format("Deleted Todo with id %d", id))
+                    .build();
+        } catch (TodosRemainingException e) {
+            return Response
+                  .status(Response.Status.FORBIDDEN)
+                  .entity(e.getMessage())
+                  .build();
         } catch (IdNotFoundException e1) {
             return Response
                     .status(Response.Status.NOT_FOUND)

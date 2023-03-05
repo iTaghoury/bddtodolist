@@ -8,13 +8,15 @@ import java.util.ArrayList;
 
 public class UserDataAccess extends DataAccess implements AutoCloseable{
 
+
     //region QUERY STRINGS
     private final String SELECT_USER_QUERY = "SELECT * FROM User";
     private final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE userId = ?";
     private final String INSERT_USER_QUERY = "INSERT INTO User (userName, userFirstName) VALUE (?, ?)";
     private final String UPDATE_USER_QUERY = "UPDATE user SET userName = ?, userFirstName = ? WHERE userId = ?";
-    private final String DELETE_USER_QUERY = "DELETE Todo.*, User.* FROM Todo LEFT JOIN User ON User.userId = Todo.userId WHERE Todo.userId = ?";
-
+    private final String DELETE_USER_QUERY = "DELETE FROM User WHERE userId = ?";
+    private final String DELETE_USER_AND_TODOS_QUERY = "DELETE Todo.*, User.* FROM Todo LEFT JOIN User ON User.userId = Todo.userId WHERE Todo.userId = ?";
+    private static final String CHECK_FOR_TODOS_QUERY = "SELECT * FROM User WHERE userId NOT IN (SELECT userId FROM Todo) AND userId = ?";
     //endregion
 
     public UserDataAccess() {
@@ -85,8 +87,9 @@ public class UserDataAccess extends DataAccess implements AutoCloseable{
     //region DELETE QUERY
 
     public void deleteUser(int userId) throws IdNotFoundException, SQLException {
+        final String QUERY = areThereTodosRemaining(userId) ? DELETE_USER_AND_TODOS_QUERY : DELETE_USER_QUERY;
         if(isIdInDB(userId)) {
-            try(PreparedStatement ps = this.connection.prepareStatement(DELETE_USER_QUERY)) {
+            try(PreparedStatement ps = this.connection.prepareStatement(QUERY)) {
                 ps.setInt(1, userId);
                 ps.execute();
             }
@@ -109,6 +112,19 @@ public class UserDataAccess extends DataAccess implements AutoCloseable{
             return false;
         }
     }
+
+    private boolean areThereTodosRemaining(int userId) {
+        try(PreparedStatement ps = this.connection.prepareStatement(CHECK_FOR_TODOS_QUERY)) {
+            ps.setInt(1, userId);
+            try(ResultSet rs = ps.executeQuery()) {
+                return !rs.next();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return true;
+        }
+    }
+
     //endregion
 
 }

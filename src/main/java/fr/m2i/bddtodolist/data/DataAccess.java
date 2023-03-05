@@ -7,11 +7,6 @@ import java.sql.*;
 
 public class DataAccess implements AutoCloseable{
     protected Connection connection;
-    protected static DataAccess instance;
-
-    static {
-        instance = null;
-    }
 
     //region USER PASSWORD AND URL
     private final String USER = "root";
@@ -22,31 +17,15 @@ public class DataAccess implements AutoCloseable{
     //region QUERIES
 
     //endregion
-    public Connection getConnection() {
+    protected Connection getConnection() {
         return connection;
     }
 
     protected DataAccess() {
         this.createConnection();
-        instance = this;
     }
 
-    public static DataAccess getInstance() {
-        if(instance == null) {
-            return new DataAccess();
-        } else {
-            try {
-                if(instance.connection.isClosed()) {
-                    instance.createConnection();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
-    }
-
-    public void createConnection() {
+    private void createConnection() {
         try {
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
             this.connection = DriverManager.getConnection(URL, USER, PASSWORD);

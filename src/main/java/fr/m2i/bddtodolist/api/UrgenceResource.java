@@ -19,7 +19,7 @@ public class UrgenceResource {
     @Path("/create")
     public Response createUrgence(@FormParam("urgenceLevel") String urgenceLevel) {
         Urgence urgence = new Urgence(urgenceLevel);
-        try(UrgenceDataAccess da = UrgenceDataAccess.getInstance()) {
+        try(UrgenceDataAccess da = new UrgenceDataAccess()) {
             da.addUrgenceToDB(urgence);
         } catch (SQLException e) {
             return Response
@@ -36,7 +36,7 @@ public class UrgenceResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUrgenceById(@PathParam("id") int id) {
-        try(UrgenceDataAccess da = UrgenceDataAccess.getInstance()) {
+        try(UrgenceDataAccess da = new UrgenceDataAccess()) {
             return Response
                     .status(Response.Status.OK)
                     .entity(da.getUrgenceById(id))
@@ -52,7 +52,7 @@ public class UrgenceResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUrgence() {
-        try(UrgenceDataAccess da = UrgenceDataAccess.getInstance()) {
+        try(UrgenceDataAccess da = new UrgenceDataAccess()) {
             return Response
                     .status(Response.Status.OK)
                     .entity(da.getUrgenceFromDB())
@@ -69,7 +69,7 @@ public class UrgenceResource {
     @Path("/update")
     public Response updateUrgence(@QueryParam("id") int id, @FormParam("urgenceLevel") String urgenceLevel) {
         Urgence urgence = new Urgence(id, urgenceLevel);
-        try (UrgenceDataAccess da = UrgenceDataAccess.getInstance()) {
+        try (UrgenceDataAccess da = new UrgenceDataAccess()) {
             da.updateUrgence(urgence);
             return Response
                     .status(Response.Status.OK)
@@ -91,7 +91,7 @@ public class UrgenceResource {
     @DELETE
     @Path("/delete")
     public Response deleteUrgence(@QueryParam("id") int id) {
-        try(UrgenceDataAccess da = UrgenceDataAccess.getInstance()) {
+        try(UrgenceDataAccess da = new UrgenceDataAccess()) {
             da.deleteUrgence(id);
             return Response
                     .status(Response.Status.OK)

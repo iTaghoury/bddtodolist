@@ -95,7 +95,7 @@ public class UrgenceResource {
             da.deleteUrgence(id);
             return Response
                     .status(Response.Status.OK)
-                    .entity(String.format("Deleted Todo with id %d", id))
+                    .entity(String.format("Deleted Urgence with id %d", id))
                     .build();
         } catch (TodosRemainingException e) {
             return Response

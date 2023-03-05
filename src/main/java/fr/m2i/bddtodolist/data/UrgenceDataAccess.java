@@ -13,7 +13,7 @@ public class UrgenceDataAccess extends DataAccess implements AutoCloseable  {
     private final String INSERT_URGENCE_QUERY = "INSERT INTO Urgence (urgenceLevel) VALUE (?)";
     private final String SELECT_URGENCE_QUERY = "SELECT * FROM Urgence";
     private final String SELECT_URGENCE_BY_ID = "SELECT * FROM Urgence WHERE urgenceId = ?";
-    private final String UPDATE_URGENCE_QUERY = "UPDATE urgence SET urgenceLevel = ? ";
+    private final String UPDATE_URGENCE_QUERY = "UPDATE urgence SET urgenceLevel = ? WHERE urgenceId = ?";
     private final String DELETE_URGENCE_QUERY = "DELETE FROM Urgence WHERE urgenceId NOT IN (SELECT urgenceId FROM Todo) AND urgenceId = ?";
     private final String CHECK_FOR_TODOS_QUERY = "SELECT * FROM Urgence WHERE urgenceId NOT IN (SELECT urgenceId FROM Todo) AND urgenceId = ?";
     //endregion
@@ -25,8 +25,6 @@ public class UrgenceDataAccess extends DataAccess implements AutoCloseable  {
     }
 
     //endregion
-
-    //region QUERY METHODS
 
     //region CREATE QUERY
 
@@ -103,8 +101,6 @@ public class UrgenceDataAccess extends DataAccess implements AutoCloseable  {
             throw new IdNotFoundException("Urgence ID NOT FOUND");
         }
     }
-
-    //endregion
 
     //endregion
 

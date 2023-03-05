@@ -8,20 +8,8 @@ import fr.m2i.bddtodolist.model.User;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class TodoDataAccess implements AutoCloseable{
-    private Connection connection;
-    private static TodoDataAccess instance;
+public class TodoDataAccess extends DataAccess implements AutoCloseable{
 
-
-    static {
-        instance = null;
-    }
-
-    //region USER PASSWORD AND URL
-    private final String USER = "root";
-    private final String PASSWORD = "0628Cara*";
-    private static final String URL = "jdbc:mysql://localhost:3306/todoList?connectTimeout=3000&useSSL=false&allowPublicKeyRetrieval=true";
-    //endregion
 
     //region QUERY STRINGS
     private final String INSERT_TODO_QUERY = "INSERT INTO Todo (todoName, todoDesc, dateTodo, urgenceId, userId) VALUE (?, ?, ?, ?, ?)";
@@ -34,49 +22,12 @@ public class TodoDataAccess implements AutoCloseable{
     private final String DELETE_TODO = "DELETE FROM Todo WHERE todoId = ?";
     //endregion
 
-    //region COMMON METHODS
-    public Connection getConnection() {
-        return connection;
+    //region CONSTRUCTOR
+
+    public TodoDataAccess() {
+        super();
     }
 
-    private TodoDataAccess() {
-        this.createConnection();
-        instance = this;
-    }
-
-    public static TodoDataAccess getInstance() {
-        if(instance == null) {
-            return new TodoDataAccess();
-        } else {
-            try {
-                if(instance.connection.isClosed()) {
-                    instance.createConnection();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
-    }
-
-    public void createConnection() {
-        try {
-            DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    /**
-     * Ferme la connexion à la base de données
-     * @throws SQLException
-     */
-    @Override
-    public void close() throws SQLException {
-        if(this.connection != null) {
-            this.connection.close();
-        }
-    }
     //endregion
 
     //region CREATE QUERY
@@ -138,7 +89,7 @@ public class TodoDataAccess implements AutoCloseable{
                 if (rs.next()) {
                     todoList = pushTodos(rs);
                 } else {
-                    throw new IdNotFoundException("User ID NOT FOUND");
+                    throw new IdNotFoundException("User ID NOT FOUND OR USER HAS NO TODO");
                 }
             }
         } catch (SQLException e) {
@@ -156,7 +107,7 @@ public class TodoDataAccess implements AutoCloseable{
                 if (rs.next()) {
                     todoList = pushTodos(rs);
                 } else {
-                    throw new IdNotFoundException("Urgence ID NOT FOUND");
+                    throw new IdNotFoundException("Urgence ID NOT FOUND OR NO TODO WITH THIS LEVEL");
                 }
             }
         } catch (SQLException e) {

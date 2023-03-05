@@ -25,7 +25,7 @@ public class TodoResource {
                                @FormParam("urgenceId") int urgenceId)
     {
         Todo todo = new Todo(todoName, todoDesc, dateTodo);
-        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+        try(TodoDataAccess da = new TodoDataAccess()) {
             da.addTodoToDB(todo, urgenceId, userId);
             return Response
                     .status(Response.Status.CREATED)
@@ -43,7 +43,7 @@ public class TodoResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTodoById(@PathParam("id") int id) {
-        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+        try(TodoDataAccess da = new TodoDataAccess()) {
             return Response
                     .status(Response.Status.OK)
                     .entity(da.getTodoById(id))
@@ -65,7 +65,7 @@ public class TodoResource {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTodoList() {
-        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+        try(TodoDataAccess da = new TodoDataAccess()) {
             return Response
                     .status(Response.Status.OK)
                     .entity(da.getTodoFromDB())
@@ -82,7 +82,7 @@ public class TodoResource {
     @Path("/user")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTodoListByUser(@QueryParam("id") int userId) {
-        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+        try(TodoDataAccess da = new TodoDataAccess()) {
             return Response
                     .status(Response.Status.OK)
                     .entity(da.getTodoByUserId(userId))
@@ -104,7 +104,7 @@ public class TodoResource {
     @Path("/urgence")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTodoListByUrgence(@QueryParam("id") int urgenceId) {
-        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+        try(TodoDataAccess da = new TodoDataAccess()) {
             return Response
                     .status(Response.Status.OK)
                     .entity(da.getTodoByUrgenceId(urgenceId))
@@ -126,7 +126,7 @@ public class TodoResource {
     @Path("/order")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOrderTodoList() {
-        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+        try(TodoDataAccess da = new TodoDataAccess()) {
             return Response
                     .status(Response.Status.OK)
                     .entity(da.getTodoOrderBy())
@@ -148,7 +148,7 @@ public class TodoResource {
                                 @FormParam("dateTodo") Date dateTodo,
                                 @FormParam("urgenceId") int urgenceId) {
         Todo todo = new Todo(todoId, todoName, todoDesc, dateTodo, new Urgence(urgenceId), new User(userId));
-        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+        try(TodoDataAccess da = new TodoDataAccess()) {
             da.updateTodo(todo);
             return Response
                     .status(Response.Status.OK)
@@ -170,7 +170,7 @@ public class TodoResource {
     @DELETE
     @Path("/delete")
     public Response deleteTodo(@QueryParam("id") int todoId) {
-        try(TodoDataAccess da = TodoDataAccess.getInstance()) {
+        try(TodoDataAccess da = new TodoDataAccess()) {
             da.deleteTodoFromDB(todoId);
             return Response
                     .status(Response.Status.OK)

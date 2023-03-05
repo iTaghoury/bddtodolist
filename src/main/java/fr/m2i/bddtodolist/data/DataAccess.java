@@ -1,13 +1,13 @@
 package fr.m2i.bddtodolist.data;
 
+import fr.m2i.bddtodolist.exception.IdNotFoundException;
 import fr.m2i.bddtodolist.model.*;
 
 import java.sql.*;
 
 public class DataAccess implements AutoCloseable{
-    private Connection connection;
-    private static DataAccess instance;
-
+    protected Connection connection;
+    protected static DataAccess instance;
 
     static {
         instance = null;
@@ -15,7 +15,7 @@ public class DataAccess implements AutoCloseable{
 
     //region USER PASSWORD AND URL
     private final String USER = "root";
-    private final String PASSWORD = "Tassemanouche1";
+    private final String PASSWORD = "0628Cara*";
     private static final String URL = "jdbc:mysql://localhost:3306/todoList?connectTimeout=3000&useSSL=false&allowPublicKeyRetrieval=true";
     //endregion
 
@@ -26,7 +26,7 @@ public class DataAccess implements AutoCloseable{
         return connection;
     }
 
-    private DataAccess() {
+    protected DataAccess() {
         this.createConnection();
         instance = this;
     }
@@ -35,8 +35,12 @@ public class DataAccess implements AutoCloseable{
         if(instance == null) {
             return new DataAccess();
         } else {
-            if(instance.connection == null) {
-                instance.createConnection();
+            try {
+                if(instance.connection.isClosed()) {
+                    instance.createConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
         return instance;
@@ -60,5 +64,4 @@ public class DataAccess implements AutoCloseable{
             this.connection.close();
         }
     }
-
 }

@@ -1,5 +1,6 @@
 package fr.m2i.bddtodolist.api;
 
+import fr.m2i.bddtodolist.data.DataAccess;
 import fr.m2i.bddtodolist.data.UserDataAccess;
 import fr.m2i.bddtodolist.exception.IdNotFoundException;
 import fr.m2i.bddtodolist.model.User;
@@ -15,7 +16,7 @@ public class UserResource {
     @POST
     @Path("/create")
     public Response createUser(@FormParam("userName") String userName, @FormParam("userFirstName") String userFirstName) {
-        try(UserDataAccess da = UserDataAccess.getInstance()){
+        try(UserDataAccess da = new UserDataAccess()){
             User user = new User(userName, userFirstName);
             da.addUserToDB(user);
             return Response
@@ -30,7 +31,7 @@ public class UserResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserById(@PathParam("id") int userId) {
-       try(UserDataAccess da = UserDataAccess.getInstance()) {
+       try(UserDataAccess da = new UserDataAccess()) {
            return Response
                    .status(Response.Status.OK)
                    .entity(da.getUserById(userId))
@@ -46,7 +47,7 @@ public class UserResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsersList() {
-        try(UserDataAccess da = UserDataAccess.getInstance()) {
+        try(UserDataAccess da = new UserDataAccess()) {
             return Response
                     .status(Response.Status.OK)
                     .entity(da.getUserFromDB())
@@ -63,7 +64,7 @@ public class UserResource {
     @Path("/update")
     public Response updateUser(@QueryParam("id") int id, @FormParam("userName") String userName, @FormParam("userFirstName") String userFirstName) {
         User user = new User(id, userName, userFirstName);
-        try(UserDataAccess da= UserDataAccess.getInstance()) {
+        try(UserDataAccess da= new UserDataAccess()) {
             da.updateUser(user);
             return Response
                     .status(Response.Status.OK)
@@ -85,7 +86,7 @@ public class UserResource {
     @DELETE
     @Path("/delete")
     public Response deleteUser(@QueryParam("id") int id) {
-        try(UserDataAccess da = UserDataAccess.getInstance()) {
+        try(UserDataAccess da = new UserDataAccess()) {
             da.deleteUser(id);
             return Response
                     .status(Response.Status.OK)

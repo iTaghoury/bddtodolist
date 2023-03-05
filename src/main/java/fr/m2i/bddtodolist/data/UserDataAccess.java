@@ -6,19 +6,7 @@ import fr.m2i.bddtodolist.model.User;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class UserDataAccess implements AutoCloseable{
-    private Connection connection;
-    private static UserDataAccess instance;
-
-
-    static {
-        instance = null;
-    }
-    //region USER PASSWORD AND URL
-    private final String USER = "root";
-    private final String PASSWORD = "0628Cara*";
-    private static final String URL = "jdbc:mysql://localhost:3306/todoList?connectTimeout=3000&useSSL=false&allowPublicKeyRetrieval=true";
-    //endregion
+public class UserDataAccess extends DataAccess implements AutoCloseable{
 
     //region QUERY STRINGS
     private final String SELECT_USER_QUERY = "SELECT * FROM User";
@@ -29,50 +17,10 @@ public class UserDataAccess implements AutoCloseable{
 
     //endregion
 
-    //region COMMON METHODS
-    public Connection getConnection() {
-        return connection;
+    public UserDataAccess() {
+        super();
     }
 
-    private UserDataAccess() {
-        this.createConnection();
-        instance = this;
-    }
-
-    public static UserDataAccess getInstance() {
-        if(instance == null) {
-            return new UserDataAccess();
-        } else {
-            try {
-                if(instance.connection.isClosed()) {
-                    instance.createConnection();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
-    }
-
-    public void createConnection() {
-        try {
-            DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    /**
-     * Ferme la connexion à la base de données
-     * @throws SQLException
-     */
-    @Override
-    public void close() throws SQLException {
-        if(this.connection != null) {
-            this.connection.close();
-        }
-    }
-    //endregion
 
     //region CREATE QUERY
     public void addUserToDB(User user) throws SQLException {
@@ -162,4 +110,5 @@ public class UserDataAccess implements AutoCloseable{
         }
     }
     //endregion
+
 }
